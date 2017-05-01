@@ -3,7 +3,9 @@ package com.creative.wififiletransfer;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
@@ -41,6 +43,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static final String SENDER = "sender";
     public static final String RECEIVER = "receiver";
     public static  String USER_TYPE = null;
+
+    protected static final int CHOOSE_FILE_RESULT_CODE = 20;
+
+    public static Uri uri ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +87,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if (id == R.id.btn_send) {
 
+
+
             USER_TYPE = SENDER;
 
             Fragment deviceListFragment = new DeviceListFragment();
@@ -90,19 +98,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     .add(R.id.container, deviceListFragment, "DeviceListFragment")
                     .commit();
 
-            manager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
-                @Override
-                public void onSuccess() {
-                    Toast.makeText(MainActivity.this, "Discovery Initiated",
-                            Toast.LENGTH_SHORT).show();
-                }
+            Intent intent = new Intent(Intent.ACTION_PICK);
+            intent.setType("image/*");
+            startActivityForResult(intent, CHOOSE_FILE_RESULT_CODE);
 
-                @Override
-                public void onFailure(int reasonCode) {
-                    Toast.makeText(MainActivity.this, "Discovery Failed : " + reasonCode,
-                            Toast.LENGTH_SHORT).show();
-                }
-            });
 
         }
 
@@ -134,6 +133,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        // User has picked an image. Transfer it to group owner i.e peer using
+        // FileTransferService.
+        if (resultCode == RESULT_OK) {
+
+
+           uri = data.getData();
+
+
+
+
+
+
+            manager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
+                @Override
+                public void onSuccess() {
+                    Toast.makeText(MainActivity.this, "Discovery Initiated",
+                            Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onFailure(int reasonCode) {
+                    Toast.makeText(MainActivity.this, "Discovery Failed : " + reasonCode,
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+    }
 
     /**
      * @param isWifiP2pEnabled the isWifiP2pEnabled to set

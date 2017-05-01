@@ -3,6 +3,7 @@ package com.creative.wififiletransfer.utils;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
@@ -10,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import com.creative.wififiletransfer.MainActivity;
@@ -152,6 +154,8 @@ public class MakeConnection implements WifiP2pManager.ConnectionInfoListener {
         @Override
         protected String doInBackground(String... params) {
             try {
+                Log.d("DEBUG_CLIENT_PRE_1", WiFiClientIp);
+
                 // init handler for progressdialog
                 ServerSocket serverSocket = new ServerSocket(PORT);
                 Log.d("DEBUG_CLIENT_PRE", WiFiClientIp);
@@ -304,14 +308,24 @@ public class MakeConnection implements WifiP2pManager.ConnectionInfoListener {
         String host = null;
         int sub_port = -1;
 
+        String selectedfilePath = null;
+        try {
+            selectedfilePath = getPath(MainActivity.uri,
+                    context);
+
+            //Log.d("DEBUG_PATH", selectedfilePath);
+
+        } catch (Exception e) {
+            // TODO: handle exception
+            e.printStackTrace();
+        }
+
         if (selectedfilePath != null) {
             File f = new File(selectedfilePath);
-            System.out.println("file name is   ::" + f.getName());
             Long FileLength = f.length();
             ActualFilelength = FileLength;
             try {
                 Extension = f.getName();
-                Log.e("Name of File-> ", "" + Extension);
             } catch (Exception e) {
                 // TODO: handle exception
                 e.printStackTrace();
@@ -323,10 +337,7 @@ public class MakeConnection implements WifiP2pManager.ConnectionInfoListener {
 
         Intent serviceIntent = new Intent(context, FileTransferService.class);
         serviceIntent.setAction(FileTransferService.ACTION_SEND_FILE);
-        serviceIntent.putExtra(FileTransferService.EXTRAS_FILE_PATH, "content://media/external/images/media/28263\n" +
-                "                                                               \n" +
-                "                                                               [ 05-01 22:45:10.958 29653:29653 E/         ]\n" +
-                "                                                               inside the check -- >");
+        serviceIntent.putExtra(FileTransferService.EXTRAS_FILE_PATH, MainActivity.uri.toString());
 
 
 
@@ -359,6 +370,22 @@ public class MakeConnection implements WifiP2pManager.ConnectionInfoListener {
             DismissProgressDialog();
         }
 
+    }
+
+    public  String getPath(Uri uri, Context context) {
+        if (uri == null) {
+            return null;
+        }
+        // this will only work for images selected from gallery
+        String[] projection = { MediaStore.Images.Media.DATA };
+        Cursor cursor = context.getContentResolver().query(uri, projection, null, null, null);
+        if (cursor != null) {
+            int column_index = cursor
+                    .getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        }
+        return uri.getPath();
     }
 
     public static boolean copySendingFile(InputStream inputStream, OutputStream out) {

@@ -35,7 +35,7 @@ public class FileTransferService extends IntentService {
     public static final String EXTRAS_GROUP_OWNER_ADDRESS = "go_host";
     public static final String EXTRAS_GROUP_OWNER_PORT = "go_port";
 
-    public static int PORT = 8988;
+    public static int PORT = 8888;
     public static final String inetaddress = "inetaddress";
     public static final int ByteSize = 512;
     public static final String Extension = "extension";
