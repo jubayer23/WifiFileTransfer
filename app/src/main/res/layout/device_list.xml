@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#80000000"
+    android:orientation="vertical"
+    android:paddingTop="3dp">
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="50dp"
+        android:background="#ffff">
+
+
+        <ListView
+            android:id="@+id/list_device"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_margin="8dp"
+            android:divider="@null"
+            android:dividerHeight="5dp"
+            android:drawSelectorOnTop="true" />
+
+        <TextView
+            android:id="@id/android:empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:text="No Avialable Device"
+            android:visibility="gone" />
+    </RelativeLayout>
+    <!-- Available peers -->
+
+</LinearLayout>
